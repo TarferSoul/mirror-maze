@@ -4,6 +4,8 @@
 
 玩家在现实与镜像中移动，借助不同的道路布局，收集钥匙、激活跨界机关，最终到达出口。现实使用青色、镜像使用紫色；桌面右侧可预览另一世界。
 
+**在线试玩：[tarfersoul.github.io/mirror-maze](https://tarfersoul.github.io/mirror-maze/)**
+
 ![游戏界面](docs/screenshot.png)
 
 ## 快速运行
@@ -61,7 +63,7 @@ npm run preview  # 在默认端口预览 dist/，先停止 npm start
 
 测试覆盖碰撞、钥匙、跨界机关、门、出口限制、最短路径、星级、存档校验与最优成绩。对每一关穷举可达状态，并通过反向图搜索确认全部状态都能到达出口，避免玩家陷入只能重开的死局。GitHub Actions 会在 `main` 推送与 PR 时执行测试和构建。
 
-浏览器实际验证情况见 [验证记录](docs/VALIDATION.md)。构建产物可以部署到支持静态文件的服务；此仓库不自动发布站点。
+浏览器实际验证情况见 [验证记录](docs/VALIDATION.md)。`main` 分支在测试和构建通过后，自动将 `dist/` 发布到 GitHub Pages；PR 只执行验证，不发布。也可以在 Actions 页面手动运行工作流重新部署。页面与 ES 模块均使用相对路径，支持 `/mirror-maze/` 子目录。
 
 ## 项目结构
 
