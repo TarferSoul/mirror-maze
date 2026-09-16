@@ -1,0 +1,18 @@
+{
+  "name": "mirror-maze",
+  "version": "1.0.0",
+  "private": true,
+  "description": "双世界迷宫：一个包含状态空间搜索的浏览器解谜课程项目",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs --dist",
+    "test": "node --test tests/engine.test.js tests/storage.test.js",
+    "check": "npm test && npm run build"
+  }
+}

@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0c101b" />
+    <meta
+      name="description"
+      content="在现实与镜像之间寻找出路。一个拥有五个关卡、跨界机关与最短路径提示的免费单人解谜游戏。"
+    />
+    <title>Mirror Maze · 双世界迷宫</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230c101b'/%3E%3Cpath d='M12 46V18h12l8 14 8-14h12v28H40V34l-8 13-8-13v12z' fill='%2380e8e0'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body data-world="0">
+    <svg
+      class="icon-library"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="i-shift" viewBox="0 0 24 24">
+        <path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4" />
+      </symbol>
+      <symbol id="i-key" viewBox="0 0 24 24">
+        <circle cx="8" cy="8" r="4" />
+        <path d="m11 11 9 9m-5-5 3-3m-1 5 3-3" />
+      </symbol>
+      <symbol id="i-exit" viewBox="0 0 24 24">
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <rect x="8" y="7" width="8" height="14" rx="1" />
+      </symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24">
+        <path d="M8 4 3 9l5 5M3 9h11a6 6 0 0 1 0 12" />
+      </symbol>
+      <symbol id="i-restart" viewBox="0 0 24 24">
+        <path d="M4 4v6h6M4 10a8 8 0 1 1 1 8" />
+      </symbol>
+      <symbol id="i-hint" viewBox="0 0 24 24">
+        <path d="M9 18h6m-5 3h4M8 14a6 6 0 1 1 8 0c-1 1-1 2-1 2H9s0-1-1-2Z" />
+      </symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24">
+        <path
+          d="M4 9h4l5-4v14l-5-4H4ZM17 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+        />
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="site-header">
+        <a href="./" class="brand" aria-label="Mirror Maze 双世界迷宫首页"
+          ><span class="brand-mark" aria-hidden="true">M<span>M</span></span
+          ><span>MIRROR MAZE<small>双世界迷宫</small></span></a
+        >
+        <div class="header-actions">
+          <span class="header-note">A PUZZLE IN TWO WORLDS</span
+          ><button
+            id="sound"
+            class="icon-button"
+            aria-label="开启音效"
+            aria-pressed="false"
+          >
+            <svg><use href="#i-sound" /></svg></button
+          ><button id="help" class="text-button">
+            <span class="question-icon">?</span>玩法说明
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <div class="journey-heading">
+          <span class="eyebrow">THE JOURNEY</span
+          ><span id="journey-progress">0 / 5 已完成</span>
+        </div>
+        <nav id="levels" class="level-nav" aria-label="选择关卡"></nav>
+
+        <div class="game-layout">
+          <section class="play-panel" aria-labelledby="level-title">
+            <header class="level-heading">
+              <div>
+                <div id="level-subtitle" class="eyebrow"></div>
+                <h1 id="level-title"></h1>
+              </div>
+              <div class="world-badge">
+                <span class="world-dot"></span
+                ><span id="world-name">现实世界</span>
+              </div>
+            </header>
+            <div class="board-frame">
+              <div class="board-corner top-left"></div>
+              <div class="board-corner bottom-right"></div>
+              <div
+                id="board"
+                class="maze-grid"
+                role="img"
+                tabindex="0"
+                aria-label="迷宫地图"
+              ></div>
+              <div class="board-coordinate">
+                <span id="coordinate">X 01 · Y 07</span
+                ><span id="board-caption">REALITY / 01</span>
+              </div>
+            </div>
+            <div class="board-toolbar">
+              <div class="keyboard-note">
+                <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd
+                ><span>或 WASD 移动</span>
+              </div>
+              <div class="tools">
+                <button
+                  id="undo"
+                  title="撤销上一步（Z）"
+                  aria-label="撤销上一步"
+                >
+                  <svg><use href="#i-undo" /></svg><span>撤销</span></button
+                ><button id="restart" title="重新开始（R）">
+                  <svg><use href="#i-restart" /></svg><span>重来</span></button
+                ><button id="hint" title="提示下一步（H）">
+                  <svg><use href="#i-hint" /></svg><span>提示</span>
+                </button>
+              </div>
+            </div>
+            <div
+              id="status"
+              class="status-line"
+              role="status"
+              aria-live="polite"
+            ></div>
+            <div class="mobile-controls" aria-label="触屏操作">
+              <div class="dpad">
+                <button data-action="up" aria-label="向上移动">↑</button
+                ><button data-action="left" aria-label="向左移动">←</button
+                ><button data-action="down" aria-label="向下移动">↓</button
+                ><button data-action="right" aria-label="向右移动">→</button>
+              </div>
+              <button id="mobile-shift" class="primary-button">
+                <svg><use href="#i-shift" /></svg>切换世界
+              </button>
+            </div>
+          </section>
+
+          <aside class="sidebar">
+            <section class="world-panel">
+              <div class="section-label">
+                <h2>世界之间</h2>
+                <span class="eyebrow">DIMENSIONS</span>
+              </div>
+              <div class="world-selector" role="group" aria-label="当前世界">
+                <button data-world-select="0" aria-pressed="true">
+                  <span class="dimension-symbol">◇</span>现实</button
+                ><button data-world-select="1" aria-pressed="false">
+                  <span class="dimension-symbol">◈</span>镜像
+                </button>
+              </div>
+              <div class="preview-heading">
+                <span id="preview-title">另一面 · 镜像世界</span
+                ><span>预览</span>
+              </div>
+              <div
+                id="minimap"
+                class="mini-grid"
+                role="img"
+                aria-label="另一世界预览"
+              ></div>
+              <button id="shift" class="primary-button">
+                <svg><use href="#i-shift" /></svg><span>切换世界</span
+                ><kbd>SPACE</kbd>
+              </button>
+              <p id="shift-availability" class="subtle-text">此处可以穿越</p>
+            </section>
+            <section class="mission-panel">
+              <div class="section-label">
+                <h2>本关目标</h2>
+                <svg class="tiny-icon"><use href="#i-exit" /></svg>
+              </div>
+              <p id="description"></p>
+              <div class="objective">
+                <span>光之钥匙</span><strong id="key-count">无需钥匙</strong>
+              </div>
+              <div id="plate-objective" class="objective" hidden>
+                <span>共鸣机关</span><strong id="plate-count"></strong>
+              </div>
+              <div class="stats">
+                <div><strong id="moves">00</strong><span>移动步数</span></div>
+                <div><strong id="shifts">00</strong><span>世界切换</span></div>
+                <div><strong id="best">—</strong><span>最佳总步数</span></div>
+              </div>
+            </section>
+            <div class="level-tip">
+              <svg><use href="#i-hint" /></svg>
+              <p id="level-tip"></p>
+            </div>
+            <button id="results" class="primary-button" hidden>
+              查看通关成绩
+            </button>
+          </aside>
+        </div>
+        <footer class="game-footer">
+          <div class="legend">
+            <span><i class="legend-player"></i>你</span
+            ><span
+              ><svg><use href="#i-exit" /></svg>出口</span
+            ><span
+              ><svg><use href="#i-key" /></svg>钥匙</span
+            ><span><i class="legend-plate">A</i>机关</span
+            ><span><i class="legend-gate">A</i>门</span>
+          </div>
+          <span id="save-status">进度自动保存在此浏览器</span>
+        </footer>
+      </main>
+    </div>
+
+    <dialog id="intro-dialog">
+      <div class="dialog-content">
+        <span class="eyebrow">WELCOME, WANDERER</span>
+        <div class="portal-mark" aria-hidden="true">◇<span>◇</span></div>
+        <h2>双世界迷宫</h2>
+        <p>
+          同一个位置，两个不同的世界。<br />穿越墙与路的边界，找到回家的出口。
+        </p>
+        <div class="instruction-grid">
+          <div><kbd>↑ ← ↓ →</kbd><span>方向键 / WASD 移动</span></div>
+          <div><kbd>SPACE</kbd><span>切换现实与镜像</span></div>
+        </div>
+        <button id="start" class="primary-button">
+          开始探索 <span aria-hidden="true">→</span></button
+        ><small>5 个关卡 · 无时间限制 · 随时可以重来</small>
+      </div>
+    </dialog>
+    <dialog id="help-dialog">
+      <div class="dialog-content">
+        <button
+          class="close-dialog"
+          data-close="help-dialog"
+          aria-label="关闭玩法说明"
+        >
+          ×</button
+        ><span class="eyebrow">HOW TO PLAY</span>
+        <h2>寻找另一面的路</h2>
+        <div class="help-list">
+          <p>
+            <strong>01 · 移动与穿越</strong>方向键或 WASD
+            移动，空格切换世界。另一面同一格是墙或未开启的门时，无法穿越。
+          </p>
+          <p>
+            <strong>02 · 钥匙与机关</strong>走到钥匙上即可收集。踩亮圆形 A / B
+            机关，会永久打开两个世界的同名方形门。
+          </p>
+          <p>
+            <strong>03 · 到达出口</strong
+            >收集本关全部钥匙，再进入发光的出口。移动与切换各计 1
+            步；达到最短总步数可获得 3 星，1.5 倍以内为 2 星。
+          </p>
+          <p>
+            <strong>04 · 需要一点帮助？</strong>H 显示最短路线的下一步，Z
+            撤销，R
+            重来。提示次数会记录在通关成绩中。手机可使用地图下方的方向按钮。
+          </p>
+        </div>
+        <button class="primary-button" data-close="help-dialog">明白了</button>
+      </div>
+    </dialog>
+    <dialog id="win-dialog">
+      <div class="dialog-content">
+        <button
+          class="close-dialog"
+          data-close="win-dialog"
+          aria-label="关闭通关成绩"
+        >
+          ×</button
+        ><span id="win-eyebrow" class="eyebrow">CROSSING COMPLETE</span>
+        <div id="win-stars" class="win-stars" aria-label="获得三星">★★★</div>
+        <h2 id="win-title">穿越成功</h2>
+        <p id="win-description"></p>
+        <div id="win-stats" class="win-stats"></div>
+        <p id="win-record" class="record-note"></p>
+        <button id="next" class="primary-button">
+          继续下一关 <span aria-hidden="true">→</span></button
+        ><button id="replay" class="secondary-button">再挑战一次</button>
+      </div>
+    </dialog>
+  </body>
+</html>
